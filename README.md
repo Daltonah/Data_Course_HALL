@@ -8,3 +8,5 @@ And on the eighth day the nerds said "let there be code"
 another edit of sorts.
 First edit using Rstudio
 Do I not need to use the git add function everytime?
+I dont think the git shell does well with numbers in names
+i have concluded you do not need to use git add everytime
