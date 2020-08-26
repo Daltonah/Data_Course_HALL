@@ -10,3 +10,4 @@ First edit using Rstudio
 Do I not need to use the git add function everytime?
 I dont think the git shell does well with numbers in names
 i have concluded you do not need to use git add everytime
+I have concluded there is significant delay between when you save in your text editor and whit git will recognize that a change has been made, the delay is a bout one minute.
