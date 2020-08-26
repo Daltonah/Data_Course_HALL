@@ -7,3 +7,4 @@ I hope i am not screwing this up...
 And on the eighth day the nerds said "let there be code"
 another edit of sorts.
 First edit using Rstudio
+Do I not need to use the git add function everytime?
