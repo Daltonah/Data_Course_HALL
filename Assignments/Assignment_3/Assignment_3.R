@@ -69,7 +69,7 @@ dat[1:3,5]
 # Can make a quick plot....just give vectors for x and y axes
 plot(x=dat$Petal.Length, y=dat$Sepal.Length)
 plot(x=dat$Species, y=dat$Sepal.Length)
-
+dat(iris)
 
 # Object "Classes" ####
 
@@ -81,12 +81,16 @@ class(dat$Species)
 
 # Check all classes (for each column in dat)
 str(dat)
-
+plot(x=dat$Sepal.Length, y=dat$Petal.Length)
+plot(x=dat$Species, y=dat$Sepal.Length)
+what R is doing is showing for line 85 the best plot it can put together despite conclicting class types
+str(dat)
 # "Classes" of vectors can be changed if needed (you'll need to, for sure, at some point!)
 
 # Let's try
 nums <- c(1,1,2,2,2,2,3,3,3,4,4,4,4,4,4,4,5,6,7,8,9)
 class(nums) # make sure it's numeric
+length(nums)
 
 # convert to a factor
 as.factor(nums) # show in console
@@ -104,7 +108,8 @@ plot(nums, main = "My Title", xlab = "My axis label", ylab = "My other axis labe
 
 
 ?jpeg()
-
+jpeg("./exampleplot.jpeg")
+plot(nums, main ="My Title", xlab = "My axis label", ylab = "My other axis label")
 
 dev.off()
 
@@ -124,8 +129,14 @@ col3 = factor(c(1,2,3,4)) # see how we can designate something as a factor
 data.frame(Clothes = col1, Numbers = col2, Factor_numbers = col3) # colname = vector, colname = vector....
 df1 = data.frame(Clothes = col1, Numbers = col2, Factor_numbers = col3) # assign to df1
 df1 # look at it...note column names are what we gave it.
+data.frame(Species = col1, Sepal.Length = col2)
+species <- c(iris$Sepal.Length[1:20])
+iris[1:20,c("Species","Sepal.Length")]
+data.frame(iris[1:20,c("Species","Sepal.Length")])
 
-
+iris[rows,spp]
+rows <- c(1:20)
+spp <- c("Species","Sepal.Length")
 
 
 # Practice subsetting ####
@@ -133,9 +144,9 @@ df1 # look at it...note column names are what we gave it.
 # Make a data frame from the first 20 rows of iris that has only Species and Sepal.Length columns
 # save it into an object called "dat3"
 
-
-
-
+dat3
+dat3 <-iris[rows,spp]
+write.csv(dat3, "./HALL_first_file.csv")
 
 # WRITING OUT FILES FROM R ####
 ?write.csv()
@@ -143,41 +154,60 @@ df1 # look at it...note column names are what we gave it.
 
 # Write your new object "dat3" to a file named "LASTNAME_first_file.csv" in your PERSONAL git repository
 
-
+data(dat)
 
 
 ### for-loops in R ####
 
 #simplest example:
-for(i in 1:10){
-  print(i)
-}
-
+for(i in 1:10){print(i)}
+for(i in dat)
 #another easy one
-for(i in levels(dat$Species)){
-  print(i)
-}
-
+for(i in levels(dat$Species)){print(i)}
+?levels
 # can calculate something for each value of i ...can use to subset to groups of interest
-for(i in levels(dat$Species)){
-  print(mean(dat[dat$Species == i,"Sepal.Length"]))
-}
+for(i in levels(dat$Species)){print(mean(dat[dat$Species == i,"Sepal.Length"]))}
 
-
+dat<-iris
 
 # YOUR REMAINING HOMEWORK ASSIGNMENT (Fill in with code) ####
 
 # 1.  Make a scatterplot of Sepal.Length vs Sepal.Width. See if you can get the points to be colored by "Species"
-
+plot(x=dat$Petal.Length, y=dat$Sepal.Width, col=iris$Species)
 
 # 2.  Write the code to save it (with meaningful labels) as a jpeg file
-
-
-# 3.  Subset the Iris data set to only include rows from the setosa and virginica Species
-
+jpeg("./Assignment3plot.jpeg")
+plot(x=dat$Petal.Length, y=dat$Sepal.Width, col=iris$Species)
+dev.off()
+# 3.  Subset the Iris data set to only include rows from the setosa and virginica Speci
+setosarows <- iris[1:50,] 
+virginicarows <- iris[101:150,]
+Newsetiris <-c(setosarows,virginicarows)
+Newsetiris
 
 # 4.  Write code to save this new subset as a .csv file called setosa_and_virginica.csv
-
+write.csv(Newsetiris, "./setosa_and_virginica.csv")
 
 # 5.  Upload this R script (with all answers filled in and tasks completed) to canvas and GitHub
       # I should be able to run your R script and get all the plots created and saved, etc.
+source("https://bioconductor.org/biocLite.R")
+old.packages()
+update.packages()
+library()
+browseVignettes()
+vignette(package = "ggplot2")
+install.packages(ggplot2)
+install.packages("vioplot")
+writeLines('PATH="${RTOOLS40_HOME}\\usr\\bin;${PATH}"', con = "~/.Renviron")
+class(1L)
+class(1:10)
+class(1)
+vector6 <- c(1,2,2,3,5,6,7)
+vector6 + vector2
+vector6
+dat$Species
+dat <- iris
+dat$Species
+class(dat$Species)
+let <- c(1,3,5,7,9)
+letters[let]
