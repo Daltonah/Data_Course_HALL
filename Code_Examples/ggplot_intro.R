@@ -25,7 +25,7 @@ data("midwest", package = "ggplot2")
 
 # Let’s initialize a basic ggplot based on the midwest dataset that we loaded.
 ggplot(midwest) # what do you see?
-
+names(midwest)
 # give it some aesthetics to work with...
 ggplot(midwest, aes(x=area, y=poptotal))  # area and poptotal are columns in 'midwest'
 
@@ -46,10 +46,11 @@ ggplot(midwest, aes(x=area, y=poptotal)) + geom_point() + geom_smooth(method = "
 
 # Store your plot as an object to add to...
 p <- ggplot(midwest, aes(x=area, y=poptotal)) + geom_point() + geom_smooth(method = "lm")
-
+p
 # Zoom in
 p + lims(x=c(0,0.1),y=c(0,1000000)) # what did this do?
 p + coord_cartesian(xlim=c(0,0.1), ylim=c(0, 1000000)) # how is this different?
+#ccor zooms in without chnging data
 
 # Store this new zoomed-in plot
 p2 <- p + coord_cartesian(xlim=c(0,0.1), ylim=c(0, 1000000))
@@ -96,6 +97,11 @@ p3 + scale_color_brewer(palette = "Set1")
 library(RColorBrewer)
 brewer.pal.info
 
+3
+remotes::install_github("wilkelab/cowplot")
+
+install.packages("colorspace", repos = "http://R-Forge.R-project.org")
+remotes::install_github("clauswilke/colorblindr")
 # Make your own and take a peek at it:
 library(colorblindr)
 pal = c("#c4a113","#c1593c","#643d91","#820616","#477887","#688e52",
@@ -136,7 +142,7 @@ p4 + facet_wrap(~ state) + theme(legend.position = "none",
 
 
 # Some other "geom" types ... for categorical x axis
-p5 = ggplot(midwest, aes(x=state,y=percollege, fill=state)) + labs(x="State",y="Percent with college degree")
+p5 = ggplot(midwest, aes(x=state,y=percollege, fill=state)) + labs(x="State",y="Percent with college degree")  
 p5
 
 p5 + geom_boxplot()
@@ -144,11 +150,16 @@ p5 + geom_violin()
 p5 + geom_bar(stat="identity") # something wrong with this picture!
 
 
+#practice example
+
+data("mtcars")
+ggplot(mtcars, aes(x=mpg , y=as.factor(carb), color=as.factor(carb),)) + labs (x= "mpg", y="Carb", title= "Does MPG affect Carbs?-No", color = "Carbs!") + geom_point()
+
 # Geoms for looking at a single variable's distribution:
 library(carData)
 data("MplsStops")
 
-ggplot(MplsStops, aes(x=lat)) + geom_histogram() + labs(title = "Latitude of police stops in Minneapolis - 2017")
+ggplot(MplsStops, aes(x=lat)) + geom_histogram() + labs(title = "Latitude of police stops in Minneapolis - 2017",)
 ggplot(MplsStops, aes(x=lat, fill = race)) + geom_density(alpha = .5) + labs(title = "Latitude of police stops in Minneapolis - 2017")
 
 
@@ -234,11 +245,66 @@ ggplot(counts, aes(x=Var1,y=Freq)) + geom_point() + geom_smooth(method="lm") +
 
 
 
+#plot themes
++ theme_classic(
++ theme_bw()
+#ect.
 
+#customizing theme for plot
+plot + theme(axis.title.x = element_text(face = "bold"))
 
+panel.grid = element_line(color= "red")
+element_blank()#deletes grid
+#changes just x axis title to bold font
+strip.text = element_text(face = "italic")
+#turns elementd into italic font in facets
+library(ggimage)
 
+data("mtcars")
+mtcars$image <- "#image file path"
+#creates column with just that image over and over, concatinate multiple images for more 
+#ex. c(rep( "file path", 16, rep (...)))
+ggplot(mtcars,aes(x = disp, y = mpg)) + geom_point()
++ geom_image("#filepath")
 
+geom_image()
+ggbackground(#plot, "filepath to png")
 
+library(patchwork)
+allows you to add plots together
+ex. p1 + p2
+or p/ p2 
+library(tidyverse)
+data("iris")
 
+pivot_longer()
+#legnthens data, increasing rows and shortenting columns
+#ex. 
+pivot_longer(df, 1:3, names_to = "Days", values_to = "Grams")
+str_remove(df_long$Days, "Day")
+#gets rid of word day in the string. 
 
+str_replace(df_long$Days, "Days", "Your Mom")
+df_long$Days <-str_remove(df_long$Days, "Day")
+df_long$Days <- as.numberic(df_long$Days)
 
+library(readxl)
+read_xlsx("./Data/wide_data_example.xlsx")
+df <- read_xlsx("./Data/wide_data_example.xlsx")
+df$`Treatment 1` <- as.numeric(df$`Treatment 1`)
+df_long <- pivot_longer(df, 2:3, names_to = "Treatment", values_to = "Mass_g", names_prefix = "Treatment")
+
+ggplot(df_long, aes(x=Treatment, y=Mass_g)) + geom_boxplot()
+
+read.csv("./Data/BioLog_Plate_Data.csv")
+df2 <- read.csv("./Data/BioLog_Plate_Data.csv")
+
+pivot_longer(df2, 6:8, names_to = "Time", values_to = "Absorance", names_prefix = Hr_)
+df2_long <- pivot_longer(df2, 6:8, names_to = "Time", values_to = "Absorbance", names_prefix = "Hr_")
+names(df2_long)
+df2_long$Time <- as.numeric(df2_long$Time)
+
+ggplot(df2_long, aes(x=Time,y=Absorbance,color=Substrate)) +
+  geom_smooth(se=FALSE) +
+  facet_wrap(~Sample.ID) +
+  theme_minimal()
