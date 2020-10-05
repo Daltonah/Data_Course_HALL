@@ -1,0 +1,10 @@
+The code for max HP of mtcars is data(mtcars) 
+ then mtcars_max<- max(mtcars$hp)
+
+ The code for calculating max HP for only automatic cars is auto_transmissions <- mtcars$am %in% 0
+Auto_subset <- mtcars[auto_transmissions,] 
+ then Auto_max<- max(Auto_subset$hp)
+
+ The code for max HP of low Disp cars is Low_Disp <-!(mtcars$disp>200)
+Low_Disp_Subset <- mtcars[Low_Disp,] 
+ then Low_Disp_max<- max(Low_Disp_Subset$hp)
