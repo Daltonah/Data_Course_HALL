@@ -18,8 +18,9 @@ library(dplyr)
 utah = read.csv("./Utah_Religions_by_County.csv")
 
 # subset to only counties with buddhists observed
-buddhist = utah[utah$Buddhism.Mahayana > 0,]
+#buddhist = utah[utah$Buddhism.Mahayana > 0,]
 
+buddhist <- filter(utah, Buddhism.Mahayana > 0) 
 # order rows by population (descending)
 #buddhist = buddhist[order(buddhist$Pop_2010, decreasing = TRUE),]
 
