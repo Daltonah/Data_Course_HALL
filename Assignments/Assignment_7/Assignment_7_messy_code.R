@@ -16,7 +16,7 @@ library(dplyr)
 
 # load data (wide format)
 utah = read.csv("./Utah_Religions_by_County.csv")
-
+utah_long = gather(utah,key = Religion, value = Proportion, -c(1:3) )
 # subset to only counties with buddhists observed
 #buddhist = utah[utah$Buddhism.Mahayana > 0,]
 
@@ -99,7 +99,10 @@ My_religiosity
 #plot(x=religiosity$Mean.Pop,y=religiosity$Mean.Religiosity)
 
 
-ggplot(My_religiosity, aes(x=Avg_pop, y=Avg_reg)) + theme_minimal() +geom_point()
+ggplot(My_religiosity, aes(x = Avg_pop, y = Avg_reg))+
+  geom_point(shape = 1)+ 
+  theme(panel.grid = element_blank(), panel.border = element_rect(colour = "black", fill=NA, size=1))
+
 
 #####################################
 #              Part 2               #
