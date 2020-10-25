@@ -25,12 +25,14 @@ mod2 <- glm(data=df1, formula = GrowthRate ~ Light + Temperature + Humidity* Nit
 stepAIC(mod2)
 stepAIC(mod1)
 
-mod3 <- glm(formula = GrowthRate ~ Light + Nitrogen + Humidity + Temperature + 
+mod3 <- aov(formula = GrowthRate ~ Light + Nitrogen + Humidity + Temperature + 
               Light:Nitrogen + Light:Humidity + Humidity:Temperature, data = df1)
 
 mod4 <-glm(data=df1, formula = GrowthRate ~ Light * Nitrogen * Humidity * Temperature+ Species)
 
 stepAIC(mod4)
+
+
 
 mod5 <- glm(formula = GrowthRate ~ Light + Nitrogen + Humidity + Temperature + 
               Species + Light:Nitrogen + Light:Humidity + Humidity:Temperature, 
