@@ -1,43 +1,109 @@
 ---
-output: 
-html_document:
-  number_sections=TRUE
-pagetitle: Assignment_9
+title: "Assignment_9"
+output: html_document
 ---
-
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(MASS)
+library(GGally)
+library(modelr)
+library(patchwork)
+df <- read.csv("../../Data/GradSchool_Admissions.csv")
+
 ```
 
-# **Assignment 9**
-
-In this assignment, you will use R (within R-Studio) to:
-  
-+ Load and clean a real data set
-+ Conduct exploratory analyses, including informative figures
-+ Build and test appropriate models
-+ Draw conclusions about your data
-+ Combine all of the above into a well-documented R-Markdown report and export (knit) it into an HTML file
-
-**All file paths should be relative, starting from *your* Assignment_9 directory!!**
-
-**This means that you need to create a new R-Project named "Assignment_9.Rproj" in your Assignment_9 directory, and work from scripts within that.**
+# Making a Summary and Cleaning the Data
+```{r}
 
 
-## **For credit...**
+summary(df)
 
-1.  Push a completed version of your Rproj and R-markdown file (details at end of this assignment) to GitHub
-2.  Your score will also depend on your analyses and presentation of your final report
+#clean data
+df$admit <- as.logical(df$admit)
 
-____________
+df$rank <- factor(df$rank)
+```
 
-# Your tasks:
+# Testing some Models
+```{r}
 
-+ Use the data set "/Data/GradSchool_Admissions.csv"
-+ You will explore and model the predictors of graduate school admission
-  - the "admit" column is coded as 1=success and 0=failure
-  - the other columns are the GRE score, the GPA, and the rank of the undergraduate institution, where I is "top-tier."
-+ Document your data explorations, figures, and conclusions in a reproducible R-markdown report
-+ Upload your **self-contained** R project, including knitted HTML report, to GitHub in *your* Assignment_9 directory
+mod1 <- glm(data=df, formula = admit~ gre + rank * gpa)
 
+mod2 <- glm(data= df, formula = admit~ rank + gpa+ gre, family = "binomial")
+
+stepAIC(mod1)
+stepAIC(mod2)
+
+mean(mod2$residuals^2)
+```
+We will go with the second model.
+
+
+
+
+
+
+Making a  new data frame with predictions
+```{r}
+df_pred <- add_predictions(df,mod2, type = "response")
+```
+
+
+# Showing various plots of the predicted data
+```{r}
+ggplot(df_pred, aes(x=gpa, y=pred)) + geom_point()
+```
+
+
+
+It appears that acceptance should go up with gpa, but lets include rank as well.
+
+
+
+```{r}
+ggplot(df_pred, aes(x=gpa, y=pred, color=rank)) + geom_point()
+
+```
+
+
+
+It looks like the higher rank undergraduate school you come from, the higher your expected acceptance.
+
+Also within each rank, the higher gpa increases expected acceptance.
+
+
+# Now lets look at gre predictions:
+```{r}
+
+ggplot(df_pred, aes(x=gre, y=pred, color=rank)) + geom_point()
+```
+
+
+
+We get very similar results, with higher gre increasing likelihood of graduate school acceptance. 
+
+Note that higher ranked schools still having the advantage.
+
+
+# Now lets compare predictions with reality:
+```{r}
+p1 <- ggplot(df, aes(x= gre, y= admit, color=rank)) +geom_point()
+p2 <- ggplot(df_pred, aes(x=gre, y=pred, color=rank)) + geom_point()
+p1 + p2
+
+p3 <- ggplot(df_pred, aes(x=gpa, y=pred, color=rank)) + geom_point()
+p4 <- ggplot(df, aes(x= gpa, y= admit, color=rank)) +geom_point()
+p3 + p4
+
+```
+
+# Conclusion from the comparison:
+
+These show us that while it is rare, individuals with low gre and/or gpa do in reality get admitted to grad school.
+
+Does this mean our model and graphs are bad predictors? 
+
+No, reality just has many more variables than we can account for. 
