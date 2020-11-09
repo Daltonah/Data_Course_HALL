@@ -1,5 +1,5 @@
 ---
-title: "Assignment_9"
+title: "Graduate Program Acceptance Analysis-Dalton Hall"
 output: html_document
 ---
 
@@ -14,45 +14,73 @@ library(patchwork)
 df <- read.csv("../../Data/GradSchool_Admissions.csv")
 
 ```
+# Introduction:
+We will be looking at and analyzing data that shows the grade point average, GRE score, rank of school and acceptance of 
+400 individuals. The data that we are examining is assigned the name "df" from here on out unless otherwise specified.
+
 
 # Making a Summary and Cleaning the Data
+We first will need to arrange the data into a more user friendly format,
+then we look at a summary of the data.
 ```{r}
-
-
-summary(df)
 
 #clean data
 df$admit <- as.logical(df$admit)
 
 df$rank <- factor(df$rank)
+
+summary(df)
+
+
 ```
+The summary tells us that a large portion of the sample size comes from rank 2 and 3 undergraduate schools.
+It also tells us that 127 out of the 400 student were actually accepted into a graduate program.
+Furthermore, the median gre and gpa values are 580.0 and 3.395 respectively.
+
 
 # Testing some Models
+A model is used to predict hypothetical outcomes of a situation using real data as a reference point.
+
+The first model tested tries to predict admittance based on gre, rank, and gpa, as well as the interaction between gpa vs gre and rank.
 ```{r}
 
 mod1 <- glm(data=df, formula = admit~ gre + rank * gpa)
 
+stepAIC(mod1)
+```
+Among all these numbers we are focusing on the final AIC value on the bottom right.
+The lower this value, the more precise our model should be.
+
+
+
+The second model tries to predict admittance based on rank, gpa, and gre.
+By setting the family to binomial, we allow for a more true depiction of our dependent variable "admit", since admission is only true or false.
+```{r}
 mod2 <- glm(data= df, formula = admit~ rank + gpa+ gre, family = "binomial")
 
-stepAIC(mod1)
-stepAIC(mod2)
 
+stepAIC(mod2)
+```
+Comparing the two values, the second model has a lower AIC, thus we use the second model from here on out.
+
+As an extra bit of info, we can look the mean squared residual of our model.
+```{r}
 mean(mod2$residuals^2)
 ```
-We will go with the second model.
+This tells us how well our data points agree with our model. 
+This concept will become more clear when we look as graphs of our predictions.
 
 
 
-
-
-
-Making a  new data frame with predictions
+Now, we add predited values to our data based upon the model we created.
 ```{r}
 df_pred <- add_predictions(df,mod2, type = "response")
 ```
 
 
 # Showing various plots of the predicted data
+
+Our first plot example pits gpa vs our model's predictions
 ```{r}
 ggplot(df_pred, aes(x=gpa, y=pred)) + geom_point()
 ```
@@ -62,48 +90,58 @@ ggplot(df_pred, aes(x=gpa, y=pred)) + geom_point()
 It appears that acceptance should go up with gpa, but lets include rank as well.
 
 
-
+This next chart  will show gpa against our predictions, but with the rank of each school color coded as well.
 ```{r}
 ggplot(df_pred, aes(x=gpa, y=pred, color=rank)) + geom_point()
 
 ```
-
-
 
 It looks like the higher rank undergraduate school you come from, the higher your expected acceptance.
 
 Also within each rank, the higher gpa increases expected acceptance.
 
 
-# Now lets look at gre predictions:
+# Now lets look at gre  plotted against our predictions:
 ```{r}
 
 ggplot(df_pred, aes(x=gre, y=pred, color=rank)) + geom_point()
 ```
 
 
-
 We get very similar results, with higher gre increasing likelihood of graduate school acceptance. 
 
-Note that higher ranked schools still having the advantage.
+Note that higher ranked schools still having the advantage in each category.
 
 
 # Now lets compare predictions with reality:
 ```{r}
-p1 <- ggplot(df, aes(x= gre, y= admit, color=rank)) +geom_point()
+p1 <- ggplot(df, aes(x= gre, y= admit, color=rank)) +geom_point() 
 p2 <- ggplot(df_pred, aes(x=gre, y=pred, color=rank)) + geom_point()
 p1 + p2
 
+```
+
+
+
+```{r}
 p3 <- ggplot(df_pred, aes(x=gpa, y=pred, color=rank)) + geom_point()
 p4 <- ggplot(df, aes(x= gpa, y= admit, color=rank)) +geom_point()
-p3 + p4
+p4 + p3
 
 ```
+
+
+On the left we have the actual acceptance data, on the right we have predicted acceptance data based on either gre for the top section, or gpa for the lower section.
+Since acceptance is true or false we only get two groups on the left graph.
+The model predicts acceptance on a scale of increasing likelihood, thus isnt as cut and dry as the real data.
+
 
 # Conclusion from the comparison:
 
 These show us that while it is rare, individuals with low gre and/or gpa do in reality get admitted to grad school.
 
-Does this mean our model and graphs are bad predictors? 
+It also shows that regardless of gpa or gre, coming from a higher ranking school gives an advantage.
 
-No, reality just has many more variables than we can account for. 
+gre and gpa do play a roll however in making the individual more appealing within their ranked school.
+
+Thus in the end the old adage is true: "It does not matter what you know, only who you know."
