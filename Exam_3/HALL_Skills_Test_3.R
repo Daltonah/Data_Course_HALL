@@ -26,6 +26,8 @@ fs4 <- pivot_longer(fs3,cols = 7:10, names_to = "Employees", values_to= "Employe
 
 fs5 <-fs4[-c(41545:41580), ]
 
+#could also do something like, fs_filtered <- filter(fs4, Tier == "I" | Tier == "IIA" | Tier == "IIB")
+
 #Plot Data
 
 p1 <-ggplot(fs5, aes(x=Rank, y=Salary, fill=Rank)) + geom_boxplot()+ facet_wrap(~Tier)+ theme_minimal()+ theme(axis.text.x = element_text(angle = 60, hjust=1))
