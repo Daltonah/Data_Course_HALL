@@ -54,6 +54,7 @@ write.table(anova_table, file = "Salary_ANOVA_Summary.txt", sep = "\t")
 
 #load next data set
 
+
 jo1<- read_csv("./Juniper_Oils.csv")
 
 #Task 3
@@ -81,6 +82,8 @@ tidytable<-tidy(jmod)
 
 sigs_chems <- filter(tidytable, p.value < 0.05)
 
+#Clean names of chemicals
+sigs_chems$term <- gsub("Chemicals","",sigs_chems$term)
 
-
+print(sigs_chems)
 
