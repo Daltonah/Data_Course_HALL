@@ -39,18 +39,18 @@ ggsave(filename = "HALL_Fig_1.jpeg",p1)
 
 # Task 2
 
-#Create models to be compared by anova
-mod1 <-glm(data = fs5, formula= Salary~State)
 
-mod2 <- glm(data = fs5,formula= Salary~Tier)
+#Create manova table
 
-mod3 <- glm(data = fs5, formula= Salary~Rank)
+anova_table<- aov(Salary ~ State + Tier + Rank, data =fs5)
 
-#creating anova table
-anova_table <-anova(mod1,mod2,mod3)
+anova_summary <- summary(anova_table)
+
+anova_summary
 
 #turning anova table into a txt file
-write.table(anova_table, file = "Salary_ANOVA_Summary.txt", sep = "\t")
+
+capture.output(anova_summary, file = "./Salary_ANOVA_Summary.txt")
 
 #load next data set
 
