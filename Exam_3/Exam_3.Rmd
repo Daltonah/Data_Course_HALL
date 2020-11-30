@@ -1,0 +1,136 @@
+---
+title: "Exam 3 markdown"
+author: "Dalton Hall"
+date: "11/29/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(MASS)
+library(patchwork)
+library(modelr)
+library(broom)
+```
+We start by loading the data used for our first task
+
+```{r}
+Fs1 <- read_csv("./FacultySalaries_1995.csv")
+```
+Then change some our data to long format for clarity
+
+```{r}
+fs2 <- pivot_longer(Fs1, cols = 5:7, names_to ="Rank", values_to = "Salary")
+
+fs3 <- pivot_longer(fs2, cols = 6:8, names_to = "Comp", values_to= "Comp_value")
+
+fs4 <- pivot_longer(fs3,cols = 7:10, names_to = "Employees", values_to= "Employee_value")
+```
+
+
+Removing erroneous data
+```{r}
+fs5 <-fs4[-c(41545:41580), ]
+```
+You could also do something like, fs_filtered <- filter(fs4, Tier == "I" | Tier == "IIA" | Tier == "IIB")
+
+
+Plotting Data
+```{r}
+ggplot(fs5, aes(x=Rank, y=Salary, fill=Rank)) + geom_boxplot()+ facet_wrap(~Tier)+ theme_minimal()+ theme(axis.text.x = element_text(angle = 60, hjust=1))
+
+```
+
+
+Save plot as jpeg file
+```{r}
+ggsave(filename = "HALL_Fig_1.jpeg")    
+```
+
+
+# Task 2
+
+Create models to be compared by anova
+
+```{r}
+mod1 <-glm(data = fs5, formula= Salary~State)
+
+mod2 <- glm(data = fs5,formula= Salary~Tier)
+
+mod3 <- glm(data = fs5, formula= Salary~Rank)
+```
+
+
+Creating anova table
+```{r}
+anova(mod1,mod2,mod3)
+
+anova_table<-anova(mod1,mod2,mod3)
+
+```
+
+
+Turning anova table into a txt file
+```{r}
+write.table(anova_table, file = "Salary_ANOVA_Summary.txt", sep = "\t")
+
+```
+
+
+Load next data set
+
+```{r}
+jo1<- read_csv("./Juniper_Oils.csv")
+
+```
+
+
+# Task 3- Cleaning the loaded data
+```{r}
+jo2<-pivot_longer(jo1,cols= 11:33, names_to="Chemicals", values_to= "Concentration")
+
+```
+
+
+## Task 4-Plotting the cleaned data, then saving the image
+
+```{r}
+ggplot(data=jo2,aes(x=YearsSinceBurn, y=Concentration))+theme_minimal()+facet_wrap(~Chemicals, scales = "free")+geom_smooth()
+p2 <-ggplot(data=jo2,aes(x=YearsSinceBurn, y=Concentration))+theme_minimal()+facet_wrap(~Chemicals, scales = "free")+geom_smooth()
+
+ggsave(filename = "HALL_Fig_2.jpeg",p2) 
+```
+
+
+# Task 5 
+
+Make a linear model to show significant chemical concentrations against years since burn
+```{r}
+glm(data=jo2, formula = Concentration~YearsSinceBurn+ Chemicals)
+
+jmod <- glm(data=jo2, formula = Concentration~YearsSinceBurn+ Chemicals)
+
+```
+
+
+Use tidy to create data frame with just significant chemicals
+```{r}
+options(scipen = 999)
+
+tidy(jmod)
+
+tidytable <- tidy(jmod)
+
+sigs_chems <- filter(tidytable, p.value < 0.05)
+```
+
+
+Clean names of chemicals in the frame
+```{r}
+sigs_chems$term <- gsub("Chemicals","",sigs_chems$term)
+
+print(sigs_chems)
+```
+
